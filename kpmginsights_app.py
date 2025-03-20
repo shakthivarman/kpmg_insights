@@ -25,7 +25,7 @@ def init_mongodb():
 # Initialize embedding model
 @st.cache_resource
 def init_embedding_model():
-    return SentenceTransformer('multi-qa-mpnet-base-cos-v1')
+    return SentenceTransformer('all-mpnet-base-v2')
 
 # Initialize LLM
 @st.cache_resource
@@ -36,9 +36,9 @@ def init_llm():
             raise ValueError("HUGGINGFACE_API_KEY not found in environment variables")
         
         llm = HuggingFaceHub(
-            repo_id="google/flan-t5-base",
+            repo_id="google/flan-t5-large",
             huggingfacehub_api_token=huggingfacehub_api_token,
-            model_kwargs={"temperature": 0.7, "max_length": 512}
+            model_kwargs={"temperature": 0.5, "max_length": 512}
         )
         return llm
     except Exception as e:
