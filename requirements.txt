@@ -1,0 +1,9 @@
+crawl4ai
+chromadb
+pypdf 
+beautifulsoup4 
+markdown
+sentence-transformers
+langchain-community
+pymongo
+langchain-text-splitters
