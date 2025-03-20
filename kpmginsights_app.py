@@ -97,7 +97,7 @@ def semantic_search(query: str, collection, embedding_model, top_k=5):
         return []
 
 def generate_response(context: str, query: str, llm) -> str:
-    prompt_template = """Based on the following context, answer the question.
+    prompt_template = """You are a helpful business analyst. Based on the following context, answer the questions in a friendly mannner. If the context does not have the answer, please do not hallucinate; only say the answer is not in the given context.
     Context: {context}
     Question: {query}
     Answer: """
