@@ -25,7 +25,7 @@ def init_mongodb():
 # Initialize embedding model
 @st.cache_resource
 def init_embedding_model():
-    return SentenceTransformer('all-mpnet-base-v2')
+    return SentenceTransformer('multi-qa-mpnet-base-cos-v1')
 
 # Initialize LLM
 @st.cache_resource
@@ -36,9 +36,9 @@ def init_llm():
             raise ValueError("HUGGINGFACE_API_KEY not found in environment variables")
         
         llm = HuggingFaceHub(
-            repo_id="google/flan-t5-large",
+            repo_id="google/flan-t5-base",
             huggingfacehub_api_token=huggingfacehub_api_token,
-            model_kwargs={"temperature": 0.5, "max_length": 512}
+            model_kwargs={"temperature": 0.7, "max_length": 512}
         )
         return llm
     except Exception as e:
@@ -96,8 +96,11 @@ def semantic_search(query: str, collection, embedding_model, top_k=5):
         st.error(f"Vector search failed: {str(e)}")
         return []
 
-def generate_response(context: str, query: str, llm) -> str:
-    prompt_template = """You are a helpful business analyst. Based on the following context, answer the questions in a friendly mannner. If the context does not have the answer, please do not hallucinate; only say the answer is not in the given context.
+def generate_response(context: List[Dict], query: str, llm) -> str:
+    # Extract text from context
+    context_text = "\n".join([r["chunk_text"] for r in context])
+    
+    prompt_template = """Based on the following context, answer the question.
     Context: {context}
     Question: {query}
     Answer: """
@@ -107,10 +110,10 @@ def generate_response(context: str, query: str, llm) -> str:
         input_variables=["context", "query"]
     )
     
-    formatted_prompt = prompt.format(context=context, query=query)
+    formatted_prompt = prompt.format(context=context_text, query=query)
     
     try:
-        response = llm.predict(formatted_prompt)
+        response = llm.invoke(formatted_prompt)
         return response
     except Exception as e:
         st.error(f"Error generating response: {str(e)}")
@@ -118,7 +121,7 @@ def generate_response(context: str, query: str, llm) -> str:
 
 def main():
     st.title("Siemens-Healthineers Document Search")
-    st.write("Ask questions about Siemens-Healthineers documents using semantic search")
+    st.write("Ask questions about Siemens Healthineers documents using semantic search")
     
     # Initialize components
     collection = init_mongodb()
