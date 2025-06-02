@@ -117,8 +117,8 @@ def generate_response(context: str, query: str, llm) -> str:
         return "Failed to generate response"
 
 def main():
-    st.title("KPMG Document Search")
-    st.write("Ask questions about KPMG documents using semantic search")
+    st.title("Siemens-Healthineers Document Search")
+    st.write("Ask questions about Siemens-Healthineers documents using semantic search")
     
     # Initialize components
     collection = init_mongodb()
